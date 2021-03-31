@@ -1,0 +1,9 @@
+Web:
+  port: ":8080"
+
+DB:
+  type: redis
+  address: "local"
+
+serializer:
+  type: json

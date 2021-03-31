@@ -1,6 +1,0 @@
-webserver:
-  port: ":8080"
-
-DBCfg:
-  type: redis
-  address: "local"

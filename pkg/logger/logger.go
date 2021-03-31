@@ -4,8 +4,8 @@ import "github.com/sirupsen/logrus"
 
 var logger *logrus.Logger
 
-func InitLogger() error {
-	logger := logrus.New()
+func Init() error {
+	logger = logrus.New()
 	logger.SetReportCaller(true)
 	return nil
 }

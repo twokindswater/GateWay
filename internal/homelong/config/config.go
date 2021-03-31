@@ -17,17 +17,22 @@ var (
 )
 
 type HomeLongCfg struct {
-	WebServer WebServer
-	DBCfg     DBCfg
+	Web        Web
+	DB         DB
+	Serializer Serializer
 }
 
-type WebServer struct {
+type Web struct {
 	Port string
 }
 
-type DBCfg struct {
+type DB struct {
 	Type    string
 	Address string
+}
+
+type Serializer struct {
+	Type string
 }
 
 func GetConfig() *HomeLongCfg {

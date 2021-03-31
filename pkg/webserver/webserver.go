@@ -1,4 +1,4 @@
-package webServer
+package webserver
 
 import "github.com/gin-gonic/gin"
 
@@ -7,7 +7,7 @@ type WebServer struct {
 	port   string
 }
 
-func InitWebServer(port string) (*WebServer, error) {
+func Init(port string) (*WebServer, error) {
 	// initialize gin server
 	// TODO: setting server more detail
 	return &WebServer{

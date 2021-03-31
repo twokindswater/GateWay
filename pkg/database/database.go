@@ -1,33 +1,35 @@
 package database
 
 import (
+	"context"
 	"errors"
 	"github.com/HomeLongServer/pkg/database/redis"
 )
 
+// database type.
 const (
 	Redis = "redis"
 )
 
 var (
-	errUndefinedDBType = errors.New("undefined database type")
+	errUndefinedDBType = errors.New("undefined database type or wrong database type")
 )
 
 type DataBase interface {
+	Get(context.Context, string) ([]byte, error)
+	Set(context.Context, string, []byte) error
 }
 
-var dataBase DataBase
+func Init(dbType, address string) (DataBase, error) {
+	var dataBase DataBase
 
-func GetDataBase() DataBase {
-	return dataBase
-}
-
-func InitDB(dbType, address string) (DataBase, error) {
 	switch dbType {
 	case Redis:
+		// initialize redis database.
 		dataBase = redis.InitRedis(address)
 	default:
 		return nil, errUndefinedDBType
 	}
+
 	return dataBase, nil
 }

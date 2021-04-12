@@ -9,7 +9,7 @@ API Gateway collection
 
 
 
-###Quick start
+### Quick start
 
 --- 
 1) docker 설치
@@ -19,7 +19,7 @@ API Gateway collection
 2) homebody server start
 - cmd/homebody/main.go 실행
 
-###REST API 
+### REST API 
 
 ---
 [account] - set with kakao
@@ -76,7 +76,7 @@ return : json {
 > method : GET
 > Return : { "id":"1", "image":"http://images" }
 
-###Config
+### Config
 
 ---
 ```yaml

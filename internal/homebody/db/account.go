@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/HomeLongServer/internal/homelong/consts"
+	"github.com/HomeLongServer/internal/homebody/consts"
 )
 
 func (d *DB) GetAccount(ctx context.Context, id string) (*Account, error) {

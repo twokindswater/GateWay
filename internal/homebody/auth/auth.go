@@ -2,8 +2,8 @@ package auth
 
 import (
 	"context"
-	"github.com/HomeLongServer/internal/homelong/db"
-	"github.com/HomeLongServer/internal/homelong/web"
+	"github.com/HomeLongServer/internal/homebody/db"
+	"github.com/HomeLongServer/internal/homebody/web"
 )
 
 type Auth struct {

@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/HomeLongServer/internal/homelong/auth"
-	"github.com/HomeLongServer/internal/homelong/config"
-	"github.com/HomeLongServer/internal/homelong/consts"
-	"github.com/HomeLongServer/internal/homelong/db"
-	"github.com/HomeLongServer/internal/homelong/web"
+	"github.com/HomeLongServer/internal/homebody/auth"
+	"github.com/HomeLongServer/internal/homebody/config"
+	"github.com/HomeLongServer/internal/homebody/consts"
+	"github.com/HomeLongServer/internal/homebody/db"
+	"github.com/HomeLongServer/internal/homebody/web"
 	"github.com/HomeLongServer/pkg/banner"
 	"github.com/HomeLongServer/pkg/logger"
 	"github.com/HomeLongServer/pkg/serializer"

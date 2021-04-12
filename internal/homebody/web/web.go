@@ -1,7 +1,7 @@
 package web
 
 import (
-	"github.com/HomeLongServer/pkg/webserver"
+	"github.com/Gateway/pkg/webserver"
 )
 
 type Web struct {

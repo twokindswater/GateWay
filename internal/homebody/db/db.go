@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/HomeLongServer/pkg/database"
-	"github.com/HomeLongServer/pkg/serializer"
+	"github.com/Gateway/pkg/database"
+	"github.com/Gateway/pkg/serializer"
 )
 
 type DB struct {
@@ -19,9 +19,4 @@ func Init(dbType, address string, serializer serializer.Serializer) (*DB, error)
 		Client:     client,
 		serializer: serializer,
 	}, nil
-}
-
-type Account struct {
-	Id    string `json:"id"`
-	Token string `json:"token"`
 }

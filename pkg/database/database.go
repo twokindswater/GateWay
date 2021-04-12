@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"errors"
-	"github.com/HomeLongServer/pkg/database/redis"
+	"github.com/Gateway/pkg/database/redis"
 )
 
 // database type.

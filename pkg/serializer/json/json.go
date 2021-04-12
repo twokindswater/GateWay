@@ -1,6 +1,9 @@
 package json
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 type JsonSerializer struct {
 }
@@ -10,9 +13,9 @@ func JsonSerializerInit() *JsonSerializer {
 }
 
 func (j *JsonSerializer) Encode(ctx context.Context, data interface{}) ([]byte, error) {
-	return nil, nil
+	return json.Marshal(data)
 }
 
 func (j *JsonSerializer) Decode(ctx context.Context, data []byte, res interface{}) error {
-	return nil
+	return json.Unmarshal(data, res)
 }

@@ -1,4 +1,4 @@
-package consts
+package data
 
 // banner tool: https://manytools.org/hacker-tools/ascii-banner/
 // font: Merlin1

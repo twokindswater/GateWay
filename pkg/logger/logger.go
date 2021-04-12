@@ -1,17 +1,20 @@
 package logger
 
-import "github.com/sirupsen/logrus"
+import (
+	"context"
+	"github.com/sirupsen/logrus"
+)
 
 var logger *logrus.Logger
 
-func Init() error {
+func Init(ctx context.Context) error {
 	logger = logrus.New()
-	logger.SetReportCaller(true)
+	logger.SetReportCaller(false)
 	return nil
 }
 
 func Error(err error) {
-	logger.Error("ERROR:%e\n", err)
+	logger.Error(err)
 }
 
 func Info(info string) {

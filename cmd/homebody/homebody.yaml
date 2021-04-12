@@ -3,7 +3,7 @@ Web:
 
 DB:
   type: redis
-  address: "local"
+  address: "localhost:6379"
 
 serializer:
   type: json

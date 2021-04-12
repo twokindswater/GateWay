@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"github.com/HomeLongServer/internal/homebody/auth"
-	"github.com/HomeLongServer/internal/homebody/config"
-	"github.com/HomeLongServer/internal/homebody/consts"
-	"github.com/HomeLongServer/internal/homebody/db"
-	"github.com/HomeLongServer/internal/homebody/web"
-	"github.com/HomeLongServer/pkg/banner"
-	"github.com/HomeLongServer/pkg/logger"
-	"github.com/HomeLongServer/pkg/serializer"
+	"github.com/Gateway/internal/homebody/account"
+	"github.com/Gateway/internal/homebody/config"
+	"github.com/Gateway/internal/homebody/data"
+	"github.com/Gateway/internal/homebody/db"
+	"github.com/Gateway/internal/homebody/time"
+	"github.com/Gateway/internal/homebody/web"
+	"github.com/Gateway/pkg/banner"
+	"github.com/Gateway/pkg/logger"
+	"github.com/Gateway/pkg/serializer"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	ctx := context.Background()
 
 	// initialize logger.
-	err := logger.Init()
+	err := logger.Init(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -44,17 +45,23 @@ func main() {
 		panic(err)
 	}
 
-	// initialize auth handler.
-	authHandler, err := auth.Init(server, database)
+	// initialize account handler.
+	accountHandler, err := account.Init(server, database)
 	if err != nil {
 		panic(err)
 	}
 
-	// register auth handler.
-	authHandler.AddHandler(ctx)
+	timeHandler, err := time.Init(server, database)
+	if err != nil {
+		panic(err)
+	}
+
+	// register handler.
+	accountHandler.AddHandler(ctx)
+	timeHandler.AddHandler(ctx)
 
 	// start message.
-	banner.ShowBanner(consts.HomeLongBanner)
+	banner.ShowBanner(data.HomeLongBanner)
 	logger.Info("server start!\n")
 
 	// web framework start.

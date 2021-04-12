@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 )
-import "github.com/HomeLongServer/pkg/serializer/json"
+import "github.com/Gateway/pkg/serializer/json"
 
 var (
 	errUndefinedSerializerType = errors.New("undefined serializer type or wrong serializer type")

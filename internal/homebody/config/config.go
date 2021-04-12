@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/HomeLongServer/pkg/conf"
+	"github.com/Gateway/pkg/conf"
 	"sync"
 )
 

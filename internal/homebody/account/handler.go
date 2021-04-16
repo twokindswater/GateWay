@@ -16,14 +16,22 @@ var (
 )
 
 func (a *Account) AddHandler(ctx context.Context) {
+
+	// auth handler.
 	a.kakaoAuthHandler(ctx)
+	a.facebookAuthHandler(ctx)
+
+	// account info handler.
 	a.getAccountHandler(ctx)
-	a.SetAccountAPHandler(ctx)
+
+	// account AP info handler.
+	a.setAccountAPHandler(ctx)
 }
 
+// get account info.
 func (a *Account) getAccountHandler(ctx context.Context) {
 
-	a.server.Client.Router.GET("account/get/:user", func(c *gin.Context) {
+	a.server.Client.Router.GET("account/info/get/:user", func(c *gin.Context) {
 
 		// get user id.
 		id := c.Param("user")
@@ -48,19 +56,21 @@ func (a *Account) getAccountHandler(ctx context.Context) {
 		}
 
 		c.JSON(data.SuccessResponseCode, gin.H{
-			"id":    ac.Id,
-			"image": ac.Image,
-			"ssid":  ac.SSID,
-			"bssid": ac.BSSID,
+			"id":       ac.Id,
+			"image":    ac.Image,
+			"ssid":     ac.SSID,
+			"bssid":    ac.BSSID,
+			"TimeInfo": ac.TimeInfo,
 		})
 	})
 }
 
-func (a *Account) SetAccountAPHandler(ctx context.Context) {
+// update user AP info.
+func (a *Account) setAccountAPHandler(ctx context.Context) {
 
 	account := &data.AccountInfo{}
 
-	a.server.Client.Router.POST("/account/set", func(c *gin.Context) {
+	a.server.Client.Router.POST("/account/ap/set", func(c *gin.Context) {
 
 		// checking request body is matched with account info.
 		if err := c.BindJSON(account); err != nil {

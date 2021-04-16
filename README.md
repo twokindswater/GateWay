@@ -19,62 +19,98 @@ API Gateway collection
 2) homebody server start
 - cmd/homebody/main.go 실행
 
+### Data structure 
+
+---
+```golang
+
+type AccountInfo struct {
+	Id       string   `json:"id"`
+	Image    string   `json:"image"`
+	SSID     string   `json:"ssid"`
+	BSSID    string   `json:"bssid"`
+	TimeInfo TimeInfo `json:"timeInfo"`
+}
+
+type TimeInfo struct {
+	Total int
+	Week  int
+	Day   int
+}
+
+
+type DayTimeInfo struct {
+Id   string `json:"id"`
+Date int    `json:"date"`
+Time int    `json:"time"` // minute
+}
+
+```
 ### REST API 
 
 ---
-[account] - set with kakao
-url : http://{{ endpoint }}:{{ port }}/login/kakao
-method : post
-format : json
-body: json {
-    id string
-}
+[login] - [kakao](http://https://developers.kakao.com)  
+url : http://{{ endpoint }}:{{ port }}/login/kakao   
+method : post   
+format : json   
+body: `AccountInfo`
 
-> ex) http://localhost:8080/login/kakao
-> method : POST
-> body : { "id":"1", "image":"http://images" }
+> ex) http://localhost:8080/login/kakao   
+> method : POST   
+> body : { "id":"1", "image":"http://images" }   
 
+[login] - [facebook](https://developers.facebook.com/)   
+url : http://{{ endpoint }}:{{ port }}/login/facebook   
+method : post   
+format : json   
+body: `AccountInfo`
 
-[time] - set
-url : http://{{ endpoint }}:{{ port }}/time/day/set
-method : post
-format : json
-body: json{
-    id string
-    date int // YYMMDD 형식 ex) 210501 : 21년 5월 1일
-    time int // 오늘 집에 있었던 총 분
-}
-
-> ex) http://localhost:8080/time/day/set
-> method : POST
-> body : { "id":"1", "date":210501, "time":120 }
+> ex) http://localhost:8080/login/facebook   
+> method : POST   
+> body : { "id":"2", "image":"http://images" }
 
 
-[time] - get
-url : http://{{ endpoint }}:{{ port }}/time/day/get/:user/:date
-method : get
-format : json
-return : json {
-    time int // 오늘 집에 있었던 총 분
-}
+[time] - **set**  
+url : http://{{ endpoint }}:{{ port }}/time/day/set   
+method : post   
+format : json   
+body: `DayTimeInfo`
 
-> ex) http://localhost:8080/time/day/get/1/210501
-> method : GET
+> ex) http://localhost:8080/time/day/set   
+> method : POST      
+> body : { "id":"1", "date":210501, "time":120 }   
 
-[account] - get
-url : http://{{ endpoint }}:{{ port }}/account/get/:user
-method : get
-format : json
-return : json {
-    id string
-    image url
-    ssid string
-    bssid string
-}
 
-> ex) http://localhost:8080/account/get/1
-> method : GET
-> Return : { "id":"1", "image":"http://images" }
+[time] - **get**   
+url : http://{{ endpoint }}:{{ port }}/time/day/get/**:user**/**:date**   
+method : get    
+format : json    
+return : json {   
+    time int // 오늘 집에 있었던 총 분    
+}   
+
+> ex) http://localhost:8080/time/day/get/1/210501    
+> method : GET    
+
+[account-info] - **get**   
+url : http://{{ endpoint }}:{{ port }}/account/info/get/**:user**   
+method : get   
+format : json   
+return : `AccountInfo`   
+
+> ex) http://localhost:8080/account/info/get/1   
+> method : GET   
+> Return : { "id":"1", "image":"http://images" }   
+
+[account-AP] - **set**
+url : http://{{ endpoint }}:{{ port }}/account/ap/set/**:user**   
+method : post    
+format : json    
+body: `AccounInfo` // ssid, bssid are updated.
+
+> ex) http://localhost:8080/account/ap/set   
+> method : POST   
+> Return : { "id":"1", "ssid":"asd", "bssid":"zxc" }
 
 ### Config
 

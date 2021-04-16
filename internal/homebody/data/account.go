@@ -5,7 +5,7 @@ type AccountInfo struct {
 	Image    string   `json:"image"`
 	SSID     string   `json:"ssid"`
 	BSSID    string   `json:"bssid"`
-	TimeInfo TimeInfo `json:"time_info"`
+	TimeInfo TimeInfo `json:"timeInfo"`
 }
 
 type TimeInfo struct {

@@ -10,15 +10,15 @@ import (
 	"net/http"
 )
 
-func (a *Account) kakaoAuthHandler(ctx context.Context) {
-	a.kakaoLoginHandler(ctx)
+func (a *Account) facebookAuthHandler(ctx context.Context) {
+	a.facebookLoginHandler(ctx)
 }
 
-func (a *Account) kakaoLoginHandler(ctx context.Context) {
+func (a *Account) facebookLoginHandler(ctx context.Context) {
 
 	account := &data.AccountInfo{}
 
-	a.server.Client.Router.POST("/login/kakao", func(c *gin.Context) {
+	a.server.Client.Router.POST("/login/facebook", func(c *gin.Context) {
 
 		// checking request body is matched with account info.
 		if err := c.BindJSON(account); err != nil {

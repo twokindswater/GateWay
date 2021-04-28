@@ -29,15 +29,8 @@ type AccountInfo struct {
 	Image    string   `json:"image"`
 	SSID     string   `json:"ssid"`
 	BSSID    string   `json:"bssid"`
-	TimeInfo TimeInfo `json:"timeInfo"`
+	TimeInfo []int 	  `json:"timeInfo"`
 }
-
-type TimeInfo struct {
-	Total int
-	Week  int
-	Day   int
-}
-
 
 type DayTimeInfo struct {
 Id   string `json:"id"`
@@ -89,6 +82,21 @@ return : json {
     time int // 오늘 집에 있었던 총 분    
 }   
 
+[time] - **get**   
+url : http://{{ endpoint }}:{{ port }}/time/week/get/**:user**/**:date**   
+method : get    
+format : json    
+return : json {   
+    time int[] // 오늘 집에 있었던 총 분    
+}   
+
+[time] - **get**   
+url : http://{{ endpoint }}:{{ port }}/time/month/get/**:user**/**:date**   
+method : get    
+format : json    
+return : json {   
+    time int[] // 오늘 집에 있었던 총 분    
+}   
 > ex) http://localhost:8080/time/day/get/1/210501    
 > method : GET    
 
@@ -100,7 +108,7 @@ return : `AccountInfo`
 
 > ex) http://localhost:8080/account/info/get/1   
 > method : GET   
-> Return : { "id":"1", "image":"http://images" }   
+> Return : { "id":"1", "image":"http://images", "ssid":"aasdf", "bssid" : "assd", "timeInfo": "[1,3,4,3,5]"}   
 
 [account-AP] - **set**
 url : http://{{ endpoint }}:{{ port }}/account/ap/set/**:user**   

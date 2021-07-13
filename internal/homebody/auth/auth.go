@@ -1,4 +1,4 @@
-package account
+package auth
 
 import (
 	"context"
@@ -10,19 +10,19 @@ import (
 	"github.com/Gateway/pkg/logger"
 )
 
-type Account struct {
+type auth struct {
 	server *web.Web
 	db     *db.DB
 }
 
-func Init(s *web.Web, db *db.DB) (*Account, error) {
-	return &Account{
+func Init(s *web.Web, db *db.DB) (*auth, error) {
+	return &auth{
 		server: s,
 		db:     db,
 	}, nil
 }
 
-func (a *Account) setAccount(ctx context.Context, account data.AccountInfo) error {
+func (a *auth) setAccount(ctx context.Context, account data.AccountInfo) error {
 
 	// check kakao account has previous.
 	prevAccount, err := a.db.GetAccount(ctx, account.Id)
@@ -40,10 +40,10 @@ func (a *Account) setAccount(ctx context.Context, account data.AccountInfo) erro
 	return a.db.SetAccount(ctx, account)
 }
 
-func (a *Account) getAccount(ctx context.Context, id string) (*data.AccountInfo, error) {
+func (a *auth) getAccount(ctx context.Context, id string) (*data.AccountInfo, error) {
 	return a.db.GetAccount(ctx, id)
 }
 
-func (a *Account) updateAccount(ctx context.Context, account data.AccountInfo) error {
+func (a *auth) updateAccount(ctx context.Context, account data.AccountInfo) error {
 	return a.db.SetAccount(ctx, account)
 }

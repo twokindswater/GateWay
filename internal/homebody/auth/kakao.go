@@ -1,4 +1,4 @@
-package account
+package auth
 
 import (
 	"context"
@@ -10,12 +10,7 @@ import (
 	"net/http"
 )
 
-func (a *Account) kakaoAuthHandler(ctx context.Context) {
-	a.kakaoLoginHandler(ctx)
-}
-
-func (a *Account) kakaoLoginHandler(ctx context.Context) {
-
+func (a *auth) kakaoHandler(ctx context.Context) {
 	account := &data.AccountInfo{}
 
 	a.server.Client.Router.POST("/login/kakao", func(c *gin.Context) {
@@ -53,5 +48,4 @@ func (a *Account) kakaoLoginHandler(ctx context.Context) {
 		c.JSON(data.SuccessResponseCode, gin.H{"status": data.SuccessResponse})
 		return
 	})
-
 }

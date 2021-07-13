@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/Gateway/internal/homebody/account"
+	"github.com/Gateway/internal/homebody/auth"
 	"github.com/Gateway/internal/homebody/config"
 	"github.com/Gateway/internal/homebody/data"
 	"github.com/Gateway/internal/homebody/db"
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// initialize account handler.
-	accountHandler, err := account.Init(server, database)
+	accountHandler, err := auth.Init(server, database)
 	if err != nil {
 		panic(err)
 	}

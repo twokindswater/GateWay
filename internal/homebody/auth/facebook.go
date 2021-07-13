@@ -1,4 +1,4 @@
-package account
+package auth
 
 import (
 	"context"
@@ -10,12 +10,7 @@ import (
 	"net/http"
 )
 
-func (a *Account) facebookAuthHandler(ctx context.Context) {
-	a.facebookLoginHandler(ctx)
-}
-
-func (a *Account) facebookLoginHandler(ctx context.Context) {
-
+func (a *auth) facebookHandler(ctx context.Context) {
 	account := &data.AccountInfo{}
 
 	a.server.Client.Router.POST("/login/facebook", func(c *gin.Context) {

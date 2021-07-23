@@ -35,7 +35,7 @@ func (t *Time) SetDayTimeHandler(ctx context.Context) {
 		}
 
 		// store day time.
-		err := t.SetDayTime(ctx, timeInfo.Id, timeInfo.Date, timeInfo.Time)
+		err := t.setTime(ctx, timeInfo.Id, timeInfo.Date, timeInfo.Time)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(data.FailResponseCode, gin.H{"error": data.FailResponse})

@@ -10,4 +10,5 @@ var (
 	SuccessResponseCode = http.StatusOK
 	FailResponse        = fmt.Sprintf("server occured error")
 	FailResponseCode    = http.StatusBadRequest
+	HeaderIsNotMatched  = fmt.Sprintf("header is not matched")
 )

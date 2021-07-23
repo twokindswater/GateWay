@@ -21,7 +21,7 @@ func Init(s *web.Web, db *db.DB) (*Time, error) {
 	}, nil
 }
 
-func (t *Time) SetDayTime(ctx context.Context, id string, date, time int) error {
+func (t *Time) setTime(ctx context.Context, id string, date, time int) error {
 
 	prevDayTime, err := t.GetDayTime(ctx, id, date)
 	if err != nil {

@@ -3,11 +3,11 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/Gateway/internal/homebody/data"
+	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
 )
 
-func (d *DB) SetAccount(ctx context.Context, a data.AccountInfo) error {
+func (d *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
 
 	// encoding account.
 	b, err := d.serializer.Encode(ctx, a)
@@ -29,7 +29,7 @@ func (d *DB) SetAccount(ctx context.Context, a data.AccountInfo) error {
 	return nil
 }
 
-func (d *DB) GetAccount(ctx context.Context, id string) (*data.AccountInfo, error) {
+func (d *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
 
 	// get account path.
 	p := GetAccountPath(id)
@@ -47,7 +47,7 @@ func (d *DB) GetAccount(ctx context.Context, id string) (*data.AccountInfo, erro
 	}
 
 	// initialize account.
-	a := &data.AccountInfo{}
+	a := &model.AccountInfo{}
 
 	// decoding account.
 	err = d.serializer.Decode(ctx, b, a)
@@ -61,5 +61,5 @@ func (d *DB) GetAccount(ctx context.Context, id string) (*data.AccountInfo, erro
 
 // h/a/{{id}}
 func GetAccountPath(id string) string {
-	return fmt.Sprintf("%s%s%s%s%s", data.ServicePrefix, data.Delimiter, data.AccountPrefix, data.Delimiter, id)
+	return fmt.Sprintf("%s%s%s%s%s", model.ServicePrefix, model.Delimiter, model.AccountPrefix, model.Delimiter, id)
 }

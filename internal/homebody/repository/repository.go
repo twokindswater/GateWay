@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Gateway/internal/homebody/data"
 	"github.com/Gateway/internal/homebody/db"
+	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/internal/homebody/web"
 	"github.com/Gateway/pkg/logger"
 )
@@ -22,7 +22,7 @@ func Init(s *web.Web, db *db.DB) (*auth, error) {
 	}, nil
 }
 
-func (a *auth) setAccount(ctx context.Context, account data.AccountInfo) error {
+func (a *auth) setAccount(ctx context.Context, account model.AccountInfo) error {
 
 	// check kakao account has previous.
 	prevAccount, err := a.db.GetAccount(ctx, account.Id)
@@ -44,6 +44,6 @@ func (a *auth) setAccount(ctx context.Context, account data.AccountInfo) error {
 	return a.db.SetAccount(ctx, account)
 }
 
-func (a *auth) getAccount(ctx context.Context, id string) (*data.AccountInfo, error) {
+func (a *auth) getAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
 	return a.db.GetAccount(ctx, id)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Gateway/internal/homebody/data"
+	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -31,7 +31,7 @@ func (a *auth) AddHandler(ctx context.Context) {
 }
 
 func (a *auth) setAccountHandler(ctx context.Context) {
-	account := data.AccountInfo{}
+	account := model.AccountInfo{}
 
 	a.server.Client.Router.POST(setAccountPath, func(c *gin.Context) {
 
@@ -52,7 +52,7 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 		prevAccount, err := a.getAccount(ctx, account.Id)
 		if err != nil {
 			logger.Error(err)
-			c.JSON(http.StatusBadGateway, gin.H{"error": data.FailResponse})
+			c.JSON(http.StatusBadGateway, gin.H{"error": model.FailResponse})
 			return
 		}
 
@@ -61,11 +61,11 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 			err := a.setAccount(ctx, account)
 			if err != nil {
 				logger.Error(err)
-				c.JSON(data.FailResponseCode, gin.H{"error": data.FailResponse})
+				c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})
 				return
 			}
 
-			c.JSON(data.SuccessResponseCode, gin.H{"status": data.SuccessResponse})
+			c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
 			return
 		}
 
@@ -73,11 +73,11 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 		err = a.setAccount(ctx, account)
 		if err != nil {
 			logger.Error(err)
-			c.JSON(data.FailResponseCode, gin.H{"error": data.FailResponse})
+			c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})
 			return
 		}
 
-		c.JSON(data.SuccessResponseCode, gin.H{"status": data.SuccessResponse})
+		c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
 		return
 
 	})
@@ -91,7 +91,7 @@ func (a *auth) getAccountHandler(ctx context.Context) {
 
 		if err := c.ShouldBindHeader(&header); err != nil {
 			logger.Error(err)
-			c.JSON(data.FailResponseCode, gin.H{"error": data.HeaderIsNotMatched})
+			c.JSON(model.FailResponseCode, gin.H{"error": model.HeaderIsNotMatched})
 			return
 		}
 
@@ -101,18 +101,18 @@ func (a *auth) getAccountHandler(ctx context.Context) {
 		ac, err := a.getAccount(ctx, string(header.ID))
 		if err != nil {
 			logger.Error(err)
-			c.JSON(data.FailResponseCode, gin.H{"error": data.FailResponse})
+			c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})
 			return
 		}
 
 		// account valid check.
 		if ac == nil {
 			logger.Error(fmt.Errorf("account info is empty(%s)", header.ID))
-			c.JSON(data.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", header.ID)})
+			c.JSON(model.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", header.ID)})
 			return
 		}
 
-		c.JSON(data.SuccessResponseCode, gin.H{
+		c.JSON(model.SuccessResponseCode, gin.H{
 			"name":      ac.Name,
 			"image":     ac.Image,
 			"ssid":      ac.SSID,

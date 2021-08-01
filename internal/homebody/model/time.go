@@ -1,4 +1,4 @@
-package data
+package model
 
 type DayTimeInfo struct {
 	Id   string `json:"id"`

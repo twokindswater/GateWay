@@ -1,4 +1,4 @@
-package data
+package model
 
 type AccountInfo struct {
 	Id        string  `json:"id"`

@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"github.com/Gateway/internal/homebody/auth"
 	"github.com/Gateway/internal/homebody/config"
-	"github.com/Gateway/internal/homebody/data"
 	"github.com/Gateway/internal/homebody/db"
-	"github.com/Gateway/internal/homebody/time"
+	"github.com/Gateway/internal/homebody/model"
+	"github.com/Gateway/internal/homebody/repository"
 	"github.com/Gateway/internal/homebody/web"
 	"github.com/Gateway/pkg/banner"
 	"github.com/Gateway/pkg/logger"
@@ -46,22 +45,14 @@ func main() {
 	}
 
 	// initialize account handler.
-	accountHandler, err := auth.Init(server, database)
+	repo, err := repository.Init(server, database)
 	if err != nil {
 		panic(err)
 	}
-
-	timeHandler, err := time.Init(server, database)
-	if err != nil {
-		panic(err)
-	}
-
-	// register handler.
-	accountHandler.AddHandler(ctx)
-	timeHandler.AddHandler(ctx)
+	repo.AddHandler(ctx)
 
 	// start message.
-	banner.ShowBanner(data.HomeLongBanner)
+	banner.ShowBanner(model.HomeLongBanner)
 	logger.Info("server start!\n")
 
 	// web framework start.

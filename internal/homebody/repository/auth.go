@@ -1,4 +1,4 @@
-package auth
+package repository
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 var (
 	ErrEmptyUser        = errors.New("empty user name")
 	ErrEmptyAccountInfo = errors.New("empty account info")
+	ErrEmptyDate        = errors.New("empty date")
 )
 
 var (
@@ -24,16 +25,36 @@ type getAccountHeader struct {
 	ID string `header:"id" binding:"required"`
 }
 
-func (a *auth) AddHandler(ctx context.Context) {
+func (r *repository) setAccount(ctx context.Context, account model.AccountInfo) error {
 
-	a.setAccountHandler(ctx)
-	a.getAccountHandler(ctx)
+	// check kakao account has previous.
+	prevAccount, err := r.db.GetAccount(ctx, account.Id)
+	if err != nil {
+		// fail to get account info.
+		logger.Error(err)
+		return errors.New(fmt.Sprintf("get account from db error (account=%v)", account.Id))
+	}
+
+	if prevAccount != nil {
+		// previous account is exist.
+		logger.Info(fmt.Sprintf("account already exist(%v)", account.Id))
+		logger.Info(fmt.Sprintf("prevAccount info:%v", prevAccount))
+
+		// replace account.
+		return r.db.SetAccount(ctx, account)
+	}
+
+	return r.db.SetAccount(ctx, account)
 }
 
-func (a *auth) setAccountHandler(ctx context.Context) {
+func (r *repository) getAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
+	return r.db.GetAccount(ctx, id)
+}
+
+func (r *repository) setAccountHandler(ctx context.Context) {
 	account := model.AccountInfo{}
 
-	a.server.Client.Router.POST(setAccountPath, func(c *gin.Context) {
+	r.server.Client.Router.POST(setAccountPath, func(c *gin.Context) {
 
 		if err := c.ShouldBindJSON(&account); err != nil {
 			logger.Error(errors.New(fmt.Sprintf("unmarshal failed : request info(%+v)"+
@@ -49,7 +70,7 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 		}
 
 		// check account has previous.
-		prevAccount, err := a.getAccount(ctx, account.Id)
+		prevAccount, err := r.getAccount(ctx, account.Id)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(http.StatusBadGateway, gin.H{"error": model.FailResponse})
@@ -58,7 +79,7 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 
 		if prevAccount != nil {
 			// replace account info to new own.
-			err := a.setAccount(ctx, account)
+			err := r.setAccount(ctx, account)
 			if err != nil {
 				logger.Error(err)
 				c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})
@@ -70,7 +91,7 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 		}
 
 		// register first account info.
-		err = a.setAccount(ctx, account)
+		err = r.setAccount(ctx, account)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})
@@ -83,9 +104,9 @@ func (a *auth) setAccountHandler(ctx context.Context) {
 	})
 }
 
-func (a *auth) getAccountHandler(ctx context.Context) {
+func (r *repository) getAccountHandler(ctx context.Context) {
 
-	a.server.Client.Router.GET(getAccountPath, func(c *gin.Context) {
+	r.server.Client.Router.GET(getAccountPath, func(c *gin.Context) {
 
 		header := getAccountHeader{}
 
@@ -98,7 +119,7 @@ func (a *auth) getAccountHandler(ctx context.Context) {
 		logger.Info(fmt.Sprintf("header:%v", c.Request.Header))
 		logger.Info(fmt.Sprintf("body:%v", c.Request.Body))
 
-		ac, err := a.getAccount(ctx, string(header.ID))
+		ac, err := r.getAccount(ctx, string(header.ID))
 		if err != nil {
 			logger.Error(err)
 			c.JSON(model.FailResponseCode, gin.H{"error": model.FailResponse})

@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/Gateway/internal/homebody/data"
+	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
 )
 
@@ -61,6 +61,6 @@ func (d *DB) GetDayTime(ctx context.Context, id string, time int) (int, error) {
 
 // h/t/{{id}}/{{date}}
 func GetAccountDayTimePath(id string, date int) string {
-	return fmt.Sprintf("%s%s%s%s%s%s%d", data.ServicePrefix, data.Delimiter, data.TimePrefix,
-		data.Delimiter, id, data.Delimiter, date)
+	return fmt.Sprintf("%s%s%s%s%s%s%d", model.ServicePrefix, model.Delimiter, model.TimePrefix,
+		model.Delimiter, id, model.Delimiter, date)
 }

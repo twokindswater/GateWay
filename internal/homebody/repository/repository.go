@@ -1,49 +1,29 @@
-package auth
+package repository
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/Gateway/internal/homebody/db"
-	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/internal/homebody/web"
-	"github.com/Gateway/pkg/logger"
 )
 
-type auth struct {
+type repository struct {
 	server *web.Web
 	db     *db.DB
 }
 
-func Init(s *web.Web, db *db.DB) (*auth, error) {
-	return &auth{
+func Init(s *web.Web, db *db.DB) (*repository, error) {
+	return &repository{
 		server: s,
 		db:     db,
 	}, nil
 }
 
-func (a *auth) setAccount(ctx context.Context, account model.AccountInfo) error {
+func (r *repository) AddHandler(ctx context.Context) {
 
-	// check kakao account has previous.
-	prevAccount, err := a.db.GetAccount(ctx, account.Id)
-	if err != nil {
-		// fail to get account info.
-		logger.Error(err)
-		return errors.New(fmt.Sprintf("get account from db error (account=%v)", account.Id))
-	}
+	r.setAccountHandler(ctx)
+	r.getAccountHandler(ctx)
 
-	if prevAccount != nil {
-		// previous account is exist.
-		logger.Info(fmt.Sprintf("account already exist(%v)", account.Id))
-		logger.Info(fmt.Sprintf("prevAccount info:%v", prevAccount))
+	r.SetDayTimeHandler(ctx)
+	r.GetDayTimeHandler(ctx)
 
-		// replace account.
-		return a.db.SetAccount(ctx, account)
-	}
-
-	return a.db.SetAccount(ctx, account)
-}
-
-func (a *auth) getAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
-	return a.db.GetAccount(ctx, id)
 }

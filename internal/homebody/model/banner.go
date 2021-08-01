@@ -1,4 +1,4 @@
-package data
+package model
 
 // banner tool: https://manytools.org/hacker-tools/ascii-banner/
 // font: Merlin1

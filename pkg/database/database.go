@@ -18,6 +18,8 @@ var (
 type DataBase interface {
 	Get(context.Context, string) ([]byte, error)
 	Set(context.Context, string, []byte) error
+	Del(ctx context.Context, string2 string) error
+	Clear(ctx context.Context) error
 }
 
 func Init(dbType, address string) (DataBase, error) {

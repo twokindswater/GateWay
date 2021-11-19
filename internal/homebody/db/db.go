@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"github.com/Gateway/pkg/database"
 	"github.com/Gateway/pkg/serializer"
 )
@@ -19,4 +20,8 @@ func Init(dbType, address string, serializer serializer.Serializer) (*DB, error)
 		Client:     client,
 		serializer: serializer,
 	}, nil
+}
+
+func (db *DB) Clear(ctx context.Context) error {
+	return db.Client.Clear(ctx)
 }

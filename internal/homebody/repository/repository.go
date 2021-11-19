@@ -20,8 +20,8 @@ func Init(s *web.Web, db *db.DB) (*repository, error) {
 
 func (r *repository) AddHandler(ctx context.Context) {
 
-	r.setAccountHandler(ctx)
-	r.getAccountHandler(ctx)
+	r.SetAccountHandler(ctx)
+	r.GetAccountHandler(ctx)
 
 	r.SetDayTimeHandler(ctx)
 	r.GetDayTimeHandler(ctx)

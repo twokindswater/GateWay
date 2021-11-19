@@ -7,10 +7,10 @@ import (
 	"github.com/Gateway/pkg/logger"
 )
 
-func (d *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
+func (db *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
 
 	// encoding account.
-	b, err := d.serializer.Encode(ctx, a)
+	b, err := db.serializer.Encode(ctx, a)
 	if err != nil {
 		logger.Error(err)
 		return errSerializer
@@ -20,7 +20,7 @@ func (d *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
 	p := GetAccountPath(a.Id)
 
 	// set account.
-	err = d.Client.Set(ctx, p, b)
+	err = db.Client.Set(ctx, p, b)
 	if err != nil {
 		logger.Error(err)
 		return errSetDataBase
@@ -29,13 +29,13 @@ func (d *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
 	return nil
 }
 
-func (d *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
+func (db *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
 
 	// get account path.
 	p := GetAccountPath(id)
 
 	// get account.
-	b, err := d.Client.Get(ctx, p)
+	b, err := db.Client.Get(ctx, p)
 	if err != nil {
 		logger.Error(err)
 		return nil, errGetDataBase
@@ -50,13 +50,20 @@ func (d *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, err
 	a := &model.AccountInfo{}
 
 	// decoding account.
-	err = d.serializer.Decode(ctx, b, a)
+	err = db.serializer.Decode(ctx, b, a)
 	if err != nil {
 		logger.Error(err)
 		return nil, errDecoding
 	}
 
 	return a, nil
+}
+
+func (db *DB) DeleteAccount(ctx context.Context, id string) error {
+
+	path := GetAccountPath(id)
+
+	return db.Client.Del(ctx, path)
 }
 
 // h/a/{{id}}

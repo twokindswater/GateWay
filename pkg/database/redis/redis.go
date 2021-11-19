@@ -33,5 +33,12 @@ func (r *redisDB) Get(ctx context.Context, id string) ([]byte, error) {
 
 func (r *redisDB) Set(ctx context.Context, key string, data []byte) error {
 	return r.client.Set(ctx, key, data, noExpirationTime).Err()
+}
 
+func (r *redisDB) Del(ctx context.Context, key string) error {
+	return r.client.Del(ctx, key).Err()
+}
+
+func (r *redisDB) Clear(ctx context.Context) error {
+	return r.client.FlushDB(ctx).Err()
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/Gateway/pkg/logger"
 )
 
-func (d *DB) SetDayTime(ctx context.Context, id string, date, time int) error {
+func (db *DB) SetDayTime(ctx context.Context, id string, date, time int) error {
 
 	// encoding time.
-	b, err := d.serializer.Encode(ctx, time)
+	b, err := db.serializer.Encode(ctx, time)
 	if err != nil {
 		logger.Error(err)
 		return errSerializer
@@ -20,7 +20,7 @@ func (d *DB) SetDayTime(ctx context.Context, id string, date, time int) error {
 	p := GetAccountDayTimePath(id, date)
 
 	// set account day time.
-	err = d.Client.Set(ctx, p, b)
+	err = db.Client.Set(ctx, p, b)
 	if err != nil {
 		logger.Error(err)
 		return errSetDataBase
@@ -29,13 +29,13 @@ func (d *DB) SetDayTime(ctx context.Context, id string, date, time int) error {
 	return nil
 }
 
-func (d *DB) GetDayTime(ctx context.Context, id string, time int) (int, error) {
+func (db *DB) GetDayTime(ctx context.Context, id string, time int) (int, error) {
 
 	// get account day time path.
 	p := GetAccountDayTimePath(id, time)
 
 	// get account day time.
-	b, err := d.Client.Get(ctx, p)
+	b, err := db.Client.Get(ctx, p)
 	if err != nil {
 		logger.Error(err)
 		return 0, errGetDataBase
@@ -50,7 +50,7 @@ func (d *DB) GetDayTime(ctx context.Context, id string, time int) (int, error) {
 	var minute int
 
 	// decoding account day time
-	err = d.serializer.Decode(ctx, b, &minute)
+	err = db.serializer.Decode(ctx, b, &minute)
 	if err != nil {
 		logger.Error(err)
 		return 0, errDecoding

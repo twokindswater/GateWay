@@ -17,7 +17,7 @@ func ReadConfigFile(fileName, filePath string) *viper.Viper {
 	conf.SetConfigName(fileName)
 	conf.SetConfigType(configType)
 	conf.AddConfigPath(filePath)
-	conf.AddConfigPath("./cmd/homebody")
+	conf.AddConfigPath(".")
 	conf.AddConfigPath(GetProjectPath())
 
 	err := conf.ReadInConfig()

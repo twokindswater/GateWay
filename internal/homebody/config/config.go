@@ -3,12 +3,14 @@ package config
 import (
 	"fmt"
 	"github.com/Gateway/pkg/conf"
+	"github.com/spf13/viper"
+	"os"
 	"sync"
 )
 
 const (
 	homeLongCfgFile = "homebody"
-	homeLongCfgPath = "/home/homebody/"
+	homeLongCfgPath = "/homebody/"
 )
 
 var (
@@ -44,7 +46,13 @@ func GetConfig() *HomeLongCfg {
 
 func loadConfig() {
 
-	cfg := conf.ReadConfigFile(homeLongCfgFile, homeLongCfgPath)
+	var cfg *viper.Viper
+	if homePath, ok := os.LookupEnv("HOME"); !ok {
+		fmt.Print("get $HOME path failed\n")
+		cfg = conf.ReadConfigFile(homeLongCfgFile, homeLongCfgPath)
+	} else {
+		cfg = conf.ReadConfigFile(homeLongCfgFile, homePath+homeLongCfgPath)
+	}
 
 	// unmarshal homebody config from read config.
 	err := cfg.Unmarshal(homeLongCfg)

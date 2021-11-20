@@ -24,6 +24,8 @@ func ReadConfigFile(fileName, filePath string) *viper.Viper {
 	if err != nil {
 		panic(fmt.Errorf("Fatal error to read config file: %s\n", err))
 	}
+	fmt.Printf("configuratio:%v\n", conf)
+
 	return conf
 }
 

@@ -1,9 +1,12 @@
-Web:
+web:
   port: ":8080"
 
-DB:
+db:
   type: redis
   address: "localhost:6379"
 
 serializer:
   type: json
+
+firebase:
+  configfile: "/Users/js/go/src/github.com/Gateway/cmd/homebody/homebody-311609-firebase-adminsdk-ae9o9-a3e04d2def.json"

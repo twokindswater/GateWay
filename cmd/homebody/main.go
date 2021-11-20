@@ -4,12 +4,12 @@ import (
 	"context"
 	"github.com/Gateway/internal/homebody/config"
 	"github.com/Gateway/internal/homebody/db"
+	"github.com/Gateway/internal/homebody/firebase"
 	"github.com/Gateway/internal/homebody/model"
-	"github.com/Gateway/internal/homebody/repository"
+	"github.com/Gateway/internal/homebody/serializer"
 	"github.com/Gateway/internal/homebody/web"
 	"github.com/Gateway/pkg/banner"
 	"github.com/Gateway/pkg/logger"
-	"github.com/Gateway/pkg/serializer"
 )
 
 func main() {
@@ -24,43 +24,41 @@ func main() {
 	}
 
 	// get configuration.
-	cfg := config.GetConfig()
+	cfg := config.GetConfig(ctx)
 
 	// initialize serializer.
-	serializer, err := serializer.Init(cfg.Serializer.Type)
+	serializer, err := serializer.Init(ctx, cfg.Serializer)
 	if err != nil {
 		panic(err)
 	}
 
 	// initialize database.
-	database, err := db.Init(cfg.DB.Type, cfg.DB.Address, serializer)
+	database, err := db.Init(ctx, cfg.DB, serializer)
 	if err != nil {
 		panic(err)
 	}
 
-	// initialize api server.
-	server, err := web.Init(cfg.Web.Port)
+	fb, err := firebase.Init(ctx, cfg.Firebase)
 	if err != nil {
 		panic(err)
 	}
 
-	// initialize account handler.
-	repo, err := repository.Init(server, database)
+	// initialize webServer.
+	webServer, err := web.Init(ctx, cfg.Web.Port, database, fb)
 	if err != nil {
 		panic(err)
 	}
-	repo.AddHandler(ctx)
 
 	// start message.
 	banner.ShowBanner(model.HomeLongBanner)
-	logger.Info("server start!\n")
+	logger.Info("webServer start!\n")
 
-	// web framework start.
-	err = server.Client.Run()
+	// webServer start.
+	err = webServer.Start(ctx)
 	if err != nil {
 		logger.Error(err)
 	}
 
-	// server done
-	logger.Info("server done!")
+	// webServer done.
+	logger.Info("webServer done!")
 }

@@ -11,8 +11,8 @@ type DB struct {
 	serializer serializer.Serializer
 }
 
-func Init(dbType, address string, serializer serializer.Serializer) (*DB, error) {
-	client, err := database.Init(dbType, address)
+func Init(ctx context.Context, config Config, serializer serializer.Serializer) (*DB, error) {
+	client, err := database.Init(config.Type, config.Address)
 	if err != nil {
 		return nil, err
 	}

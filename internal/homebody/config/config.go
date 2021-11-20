@@ -1,7 +1,12 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"github.com/Gateway/internal/homebody/db"
+	"github.com/Gateway/internal/homebody/firebase"
+	"github.com/Gateway/internal/homebody/serializer"
+	"github.com/Gateway/internal/homebody/web"
 	"github.com/Gateway/pkg/conf"
 	"github.com/spf13/viper"
 	"os"
@@ -19,25 +24,13 @@ var (
 )
 
 type HomeLongCfg struct {
-	Web        Web
-	DB         DB
-	Serializer Serializer
+	Web        web.Config        `config:"web"`
+	DB         db.Config         `config:"db"`
+	Serializer serializer.Config `config:"serializer"`
+	Firebase   firebase.Config   `config:"firebase"`
 }
 
-type Web struct {
-	Port string
-}
-
-type DB struct {
-	Type    string
-	Address string
-}
-
-type Serializer struct {
-	Type string
-}
-
-func GetConfig() *HomeLongCfg {
+func GetConfig(ctx context.Context) *HomeLongCfg {
 	once.Do(func() {
 		loadConfig()
 	})

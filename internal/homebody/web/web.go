@@ -14,11 +14,11 @@ type Web struct {
 	fb     *firebase.App
 }
 
-func Init(ctx context.Context, port string, db *db.DB, fb *firebase.App) (*Web, error) {
+func Init(ctx context.Context, config Config, db *db.DB, fb *firebase.App) (*Web, error) {
 
 	web := &Web{
 		engine: gin.Default(),
-		port:   port,
+		port:   config.Port,
 		db:     db,
 		fb:     fb,
 	}

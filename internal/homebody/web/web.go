@@ -27,6 +27,8 @@ func Init(ctx context.Context, config Config, db *db.DB, fb *firebase.App) (*Web
 }
 
 func (w *Web) Start(ctx context.Context) error {
+	w.AddHandler(ctx)
+
 	return w.engine.Run(w.port)
 }
 

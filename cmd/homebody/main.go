@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// initialize webServer.
-	webServer, err := web.Init(ctx, cfg.Web.Port, database, fb)
+	webServer, err := web.Init(ctx, cfg.Web, database, fb)
 	if err != nil {
 		panic(err)
 	}

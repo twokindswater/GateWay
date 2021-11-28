@@ -9,6 +9,7 @@ var logger *logrus.Logger
 
 func Init(ctx context.Context) error {
 	logger = logrus.New()
+	logger.SetLevel(logrus.InfoLevel)
 	logger.SetReportCaller(false)
 	return nil
 }

@@ -43,6 +43,9 @@ func (w *Web) AddHandler(ctx context.Context) {
 	w.SetAccountHandler(ctx)
 	w.GetAccountHandler(ctx)
 
+	w.SetLocationHandler(ctx)
+	w.SetWifiHandler(ctx)
+
 	w.SetDayTimeHandler(ctx)
 	w.GetDayTimeHandler(ctx)
 }

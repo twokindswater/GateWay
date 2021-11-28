@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
@@ -19,6 +18,9 @@ var (
 	getAccountPath    = "/account/get"
 	updateAccountPath = "/account/update"
 	deleteAccountPath = "/account/delete"
+
+	setLocationPath = "/location/set"
+	setWifiPath     = "wifi/set"
 )
 
 func (w *Web) SetAccountHandler(ctx context.Context) {
@@ -27,8 +29,7 @@ func (w *Web) SetAccountHandler(ctx context.Context) {
 	w.engine.POST(setAccountPath, func(c *gin.Context) {
 
 		if err := c.ShouldBindJSON(&account); err != nil {
-			logger.Error(errors.New(fmt.Sprintf("unmarshal failed : request info(%+v)"+
-				" is not matched with account info struct(%v)", c.Request, account)))
+			logger.Error(err)
 
 			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
 			return
@@ -47,7 +48,7 @@ func (w *Web) SetAccountHandler(ctx context.Context) {
 			err := w.db.SetAccount(ctx, account)
 			if err != nil {
 				logger.Error(err)
-				c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 				return
 			}
 
@@ -72,25 +73,22 @@ func (w *Web) GetAccountHandler(ctx context.Context) {
 	header := getAccountHeader{}
 
 	w.engine.GET(getAccountPath, func(c *gin.Context) {
-
 		if err := c.ShouldBindHeader(&header); err != nil {
 			logger.Error(err)
-			c.JSON(model.FailResponseCode, gin.H{"error": model.HeaderIsNotMatched +
-				fmt.Sprintf("expected(%v) actual(%v)", header, c.Request)})
+			c.JSON(model.FailResponseCode, gin.H{"error": model.HeaderIsNotMatched})
 			return
 		}
 
 		if header.ID == "" {
 			logger.Error(fmt.Errorf("header.ID is null"))
-			c.JSON(model.FailResponseCode, gin.H{"error": model.HeaderIsNotMatched +
-				"header.id is empty"})
+			c.JSON(model.FailResponseCode, gin.H{"error": model.HeaderIsNotMatched})
 			return
 		}
 
 		ac, err := w.db.GetAccount(ctx, header.ID)
 		if err != nil {
 			logger.Error(err)
-			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -121,8 +119,7 @@ func (w *Web) UpdateAccountHandler(ctx context.Context) {
 	w.engine.POST(updateAccountPath, func(c *gin.Context) {
 
 		if err := c.ShouldBindJSON(&account); err != nil {
-			logger.Error(errors.New(fmt.Sprintf("unmarshal failed : request info(%+v)"+
-				" is not matched with account info struct(%v)", c.Request, account)))
+			logger.Error(err)
 
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -213,4 +210,87 @@ func updateAccount(prev *model.AccountInfo, new *model.AccountInfo) {
 	if new.Longitude != 0 {
 		prev.Longitude = new.Longitude
 	}
+}
+
+func (w *Web) SetLocationHandler(ctx context.Context) {
+	account := model.AccountInfo{}
+
+	w.engine.POST(setLocationPath, func(c *gin.Context) {
+
+		if err := c.ShouldBindJSON(&account); err != nil {
+			logger.Error(err)
+
+			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
+			return
+		}
+
+		// check account has previous.
+		prevAccount, err := w.db.GetAccount(ctx, account.Id)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		if prevAccount != nil {
+
+			prevAccount.Latitude = account.Latitude
+			prevAccount.Longitude = account.Longitude
+			prevAccount.Street = account.Street
+
+			err := w.db.SetAccount(ctx, *prevAccount)
+			if err != nil {
+				logger.Error(err)
+				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+				return
+			}
+
+			c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
+			return
+		}
+
+		logger.Error(fmt.Errorf("account info is empty(%s)", account.Id))
+		c.JSON(model.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", account.Id)})
+	})
+}
+
+func (w *Web) SetWifiHandler(ctx context.Context) {
+	account := model.AccountInfo{}
+
+	w.engine.POST(setWifiPath, func(c *gin.Context) {
+
+		if err := c.ShouldBindJSON(&account); err != nil {
+			logger.Error(err)
+
+			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
+			return
+		}
+
+		// check account has previous.
+		prevAccount, err := w.db.GetAccount(ctx, account.Id)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		if prevAccount != nil {
+
+			prevAccount.SSID = account.SSID
+			prevAccount.BSSID = account.BSSID
+
+			err := w.db.SetAccount(ctx, *prevAccount)
+			if err != nil {
+				logger.Error(err)
+				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+				return
+			}
+
+			c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
+			return
+		}
+
+		logger.Error(fmt.Errorf("account info is empty(%s)", account.Id))
+		c.JSON(model.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", account.Id)})
+	})
 }

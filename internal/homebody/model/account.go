@@ -7,7 +7,7 @@ type AccountInfo struct {
 	SSID      string  `json:"ssid"`
 	BSSID     string  `json:"bssid"`
 	Street    string  `json:"street"`
-	InitDate  int     `json:"initDate"`
+	InitDate  string  `json:"initDate"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }

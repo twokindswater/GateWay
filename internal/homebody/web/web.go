@@ -7,12 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Web struct {
-	engine *gin.Engine
-	port   string
-	db     *db.DB
-	fb     *firebase.App
-}
+type (
+	Web struct {
+		engine *gin.Engine
+		port   string
+		db     *db.DB
+		fb     *firebase.App
+	}
+
+	Config struct {
+		Port string `config:"port"`
+	}
+)
 
 func Init(ctx context.Context, config Config, db *db.DB, fb *firebase.App) (*Web, error) {
 
@@ -39,5 +45,4 @@ func (w *Web) AddHandler(ctx context.Context) {
 
 	w.SetDayTimeHandler(ctx)
 	w.GetDayTimeHandler(ctx)
-
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/Gateway/pkg/logger"
 )
 
-func (db *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
+func (db *DB) SetAccount(ctx context.Context, a model.Account) error {
 
 	// encoding account.
 	b, err := db.serializer.Encode(ctx, a)
@@ -29,7 +29,7 @@ func (db *DB) SetAccount(ctx context.Context, a model.AccountInfo) error {
 	return nil
 }
 
-func (db *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, error) {
+func (db *DB) GetAccount(ctx context.Context, id string) (*model.Account, error) {
 
 	// get account path.
 	p := GetAccountPath(id)
@@ -47,7 +47,7 @@ func (db *DB) GetAccount(ctx context.Context, id string) (*model.AccountInfo, er
 	}
 
 	// initialize account.
-	a := &model.AccountInfo{}
+	a := &model.Account{}
 
 	// decoding account.
 	err = db.serializer.Decode(ctx, b, a)

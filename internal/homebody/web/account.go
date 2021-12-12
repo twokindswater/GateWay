@@ -5,26 +5,35 @@ import (
 	"fmt"
 	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
+	"github.com/Gateway/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type getAccountHeader struct {
+type AccountHeader struct {
 	ID string `header:"id" binding:"required"`
+}
+
+type FriendHeader struct {
+	ID  string `header:"id" binding:"required"`
+	FID string `header:"fid" binding:"omitempty"`
 }
 
 var (
 	setAccountPath    = "/account/set"
 	getAccountPath    = "/account/get"
-	updateAccountPath = "/account/update"
 	deleteAccountPath = "/account/delete"
 
 	setLocationPath = "/location/set"
-	setWifiPath     = "wifi/set"
+	setWifiPath     = "/wifi/set"
+
+	setFriendPath   = "/friend/set"
+	getFriendPath   = "/friend/get"
+	deleteFrindPath = "/friend/delete"
 )
 
 func (w *Web) SetAccountHandler(ctx context.Context) {
-	account := model.AccountInfo{}
+	account := model.Account{}
 
 	w.engine.POST(setAccountPath, func(c *gin.Context) {
 
@@ -35,29 +44,7 @@ func (w *Web) SetAccountHandler(ctx context.Context) {
 			return
 		}
 
-		// check account has previous.
-		prevAccount, err := w.db.GetAccount(ctx, account.Id)
-		if err != nil {
-			logger.Error(err)
-			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
-			return
-		}
-
-		if prevAccount != nil {
-			// replace account info to new own.
-			err := w.db.SetAccount(ctx, account)
-			if err != nil {
-				logger.Error(err)
-				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
-			return
-		}
-
-		// register first account info.
-		err = w.db.SetAccount(ctx, account)
+		err := w.db.SetAccount(ctx, account)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
@@ -70,7 +57,7 @@ func (w *Web) SetAccountHandler(ctx context.Context) {
 }
 
 func (w *Web) GetAccountHandler(ctx context.Context) {
-	header := getAccountHeader{}
+	header := AccountHeader{}
 
 	w.engine.GET(getAccountPath, func(c *gin.Context) {
 		if err := c.ShouldBindHeader(&header); err != nil {
@@ -108,49 +95,7 @@ func (w *Web) GetAccountHandler(ctx context.Context) {
 			"initDate":  ac.InitDate,
 			"latitude":  ac.Latitude,
 			"longitude": ac.Longitude,
-		})
-		return
-	})
-}
-
-func (w *Web) UpdateAccountHandler(ctx context.Context) {
-	account := model.AccountInfo{}
-
-	w.engine.POST(updateAccountPath, func(c *gin.Context) {
-
-		if err := c.ShouldBindJSON(&account); err != nil {
-			logger.Error(err)
-
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		preAccount, err := w.db.GetAccount(ctx, account.Id)
-		if err != nil {
-			err = w.db.SetAccount(ctx, account)
-			if err != nil {
-				logger.Error(err)
-				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
-			}
-		}
-
-		updateAccount(preAccount, &account)
-
-		err = w.db.SetAccount(ctx, *preAccount)
-		if err != nil {
-			logger.Error(err)
-			c.JSON(model.FailResponseCode, gin.H{"error": err.Error()})
-		}
-
-		c.JSON(model.SuccessResponseCode, gin.H{
-			"name":      preAccount.Name,
-			"image":     preAccount.Image,
-			"ssid":      preAccount.SSID,
-			"bssid":     preAccount.BSSID,
-			"street":    preAccount.Street,
-			"initDate":  preAccount.InitDate,
-			"latitude":  preAccount.Latitude,
-			"longitude": preAccount.Longitude,
+			"friend":    ac.Friends,
 		})
 		return
 	})
@@ -159,7 +104,7 @@ func (w *Web) UpdateAccountHandler(ctx context.Context) {
 func (w *Web) DeleteAccountHandler(ctx context.Context) {
 
 	w.engine.GET(deleteAccountPath, func(c *gin.Context) {
-		header := getAccountHeader{}
+		header := AccountHeader{}
 
 		if err := c.ShouldBindHeader(&header); err != nil {
 			logger.Error(err)
@@ -178,42 +123,8 @@ func (w *Web) DeleteAccountHandler(ctx context.Context) {
 	})
 }
 
-func updateAccount(prev *model.AccountInfo, new *model.AccountInfo) {
-	if new.Name != "" {
-		prev.Name = new.Name
-	}
-
-	if new.Image != "" {
-		prev.Image = new.Image
-	}
-
-	if new.SSID != "" {
-		prev.SSID = new.SSID
-	}
-
-	if new.BSSID != "" {
-		prev.BSSID = new.BSSID
-	}
-
-	if new.Street != "" {
-		prev.Street = new.Street
-	}
-
-	if new.InitDate != "" {
-		prev.InitDate = new.InitDate
-	}
-
-	if new.Latitude != 0 {
-		prev.Latitude = new.Latitude
-	}
-
-	if new.Longitude != 0 {
-		prev.Longitude = new.Longitude
-	}
-}
-
 func (w *Web) SetLocationHandler(ctx context.Context) {
-	account := model.AccountInfo{}
+	account := model.Account{}
 
 	w.engine.POST(setLocationPath, func(c *gin.Context) {
 
@@ -255,7 +166,7 @@ func (w *Web) SetLocationHandler(ctx context.Context) {
 }
 
 func (w *Web) SetWifiHandler(ctx context.Context) {
-	account := model.AccountInfo{}
+	account := model.Account{}
 
 	w.engine.POST(setWifiPath, func(c *gin.Context) {
 
@@ -292,5 +203,85 @@ func (w *Web) SetWifiHandler(ctx context.Context) {
 
 		logger.Error(fmt.Errorf("account info is empty(%s)", account.Id))
 		c.JSON(model.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", account.Id)})
+	})
+}
+
+func (w *Web) AddFriendHandler(ctx context.Context) {
+	friendHeader := &FriendHeader{}
+
+	w.engine.POST(setFriendPath, func(c *gin.Context) {
+		if err := c.ShouldBindHeader(&friendHeader); err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account, err := w.db.GetAccount(ctx, friendHeader.ID)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account.Friends = append(account.Friends, friendHeader.FID)
+
+		if err := w.db.SetAccount(ctx, *account); err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
+		return
+	})
+}
+
+func (w *Web) GetFriendHandler(ctx context.Context) {
+	friendHeader := &FriendHeader{}
+
+	w.engine.GET(getFriendPath, func(c *gin.Context) {
+		if err := c.ShouldBindHeader(&friendHeader); err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account, err := w.db.GetAccount(ctx, friendHeader.ID)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(model.SuccessResponseCode, gin.H{
+			"friends": account.Friends,
+		})
+
+		return
+	})
+}
+
+func (w *Web) DeleteFriendHandler(ctx context.Context) {
+	friendHeader := FriendHeader{}
+
+	w.engine.GET(deleteFrindPath, func(c *gin.Context) {
+		if err := c.ShouldBindHeader(&friendHeader); err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account, err := w.db.GetAccount(ctx, friendHeader.ID)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account.Friends = utils.Remove(account.Friends, friendHeader.FID)
+
+		c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
+
+		return
 	})
 }

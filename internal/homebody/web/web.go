@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+
 	firebase "firebase.google.com/go"
 	"github.com/Gateway/internal/homebody/db"
 	"github.com/gin-gonic/gin"
@@ -48,4 +49,10 @@ func (w *Web) AddHandler(ctx context.Context) {
 
 	w.SetDayTimeHandler(ctx)
 	w.GetDayTimeHandler(ctx)
+
+	// friend
+	w.AddFriendHandler(ctx)
+	w.GetAllFriendsHandler(ctx)
+	w.GetFriendHandler(ctx)
+	w.DeleteFriendHandler(ctx)
 }

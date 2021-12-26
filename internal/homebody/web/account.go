@@ -3,11 +3,12 @@ package web
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/Gateway/internal/homebody/model"
 	"github.com/Gateway/pkg/logger"
 	"github.com/Gateway/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AccountHeader struct {
@@ -27,9 +28,10 @@ var (
 	setLocationPath = "/location/set"
 	setWifiPath     = "/wifi/set"
 
-	setFriendPath   = "/friend/set"
-	getFriendPath   = "/friend/get"
-	deleteFrindPath = "/friend/delete"
+	setFriendPath    = "/friend/set"
+	getFriendPath    = "/friend/get"
+	getAllFriendPath = "/friend/get/all"
+	deleteFrindPath  = "/friend/delete"
 )
 
 func (w *Web) SetAccountHandler(ctx context.Context) {
@@ -206,6 +208,49 @@ func (w *Web) SetWifiHandler(ctx context.Context) {
 	})
 }
 
+func (w *Web) GetAllFriendsHandler(ctx context.Context) {
+	friendHeader := &FriendHeader{}
+
+	w.engine.GET(getAllFriendPath, func(c *gin.Context) {
+		if err := c.ShouldBindHeader(&friendHeader); err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		account, err := w.db.GetAccount(ctx, friendHeader.ID)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		//var body []map[string]interface{}
+		var friends []model.Friend
+
+		for _, fid := range account.Friends {
+			account, err := w.db.GetAccount(ctx, fid)
+			if err != nil {
+				logger.Error(err)
+				c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+				return
+			}
+			// ToDO : make AtHome DB and manage home user
+			friend := model.Friend{
+				Id:     account.Id,
+				Name:   account.Name,
+				Image:  account.Image,
+				AtHome: account.AtHome,
+			}
+
+			friends = append(friends, friend)
+		}
+
+		c.JSON(model.SuccessResponseCode, friends)
+
+		return
+	})
+}
 func (w *Web) AddFriendHandler(ctx context.Context) {
 	friendHeader := &FriendHeader{}
 
@@ -252,10 +297,10 @@ func (w *Web) GetFriendHandler(ctx context.Context) {
 			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 			return
 		}
-
-		c.JSON(model.SuccessResponseCode, gin.H{
-			"friends": account.Friends,
-		})
+		// ToDO : make AtHome DB and manage home user
+		friend := model.Friend{Id: account.Id, Name: account.Name,
+			Image: account.Image, AtHome: account.AtHome}
+		c.JSON(model.SuccessResponseCode, friend)
 
 		return
 	})
@@ -280,6 +325,12 @@ func (w *Web) DeleteFriendHandler(ctx context.Context) {
 
 		account.Friends = utils.Remove(account.Friends, friendHeader.FID)
 
+		err = w.db.SetAccount(ctx, *account)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(model.SuccessResponseCode, gin.H{"status": model.SuccessResponse})
 
 		return

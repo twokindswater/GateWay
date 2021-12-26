@@ -44,6 +44,13 @@ type Account struct {
 	Friends   []string `json:"friends"`
 }
 
+type Friend struct {
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Image  string `json:"image"`
+	AtHome bool   `json:"atHome"`
+}
+
 type AccountHeader struct {
 	ID string `header:"id" binding:"required"`
 }
@@ -81,13 +88,18 @@ REST API
   + url : http://{{ endpoint }}:{{ port }}/friend/set  
   + method : POST
   + header : `FriendHeader`
-+ friend get
-  + url : http://{{ endpoint }}:{{ port }}/account/info/get/
++ friend getAll
+  + url : http://{{ endpoint }}:{{ port }}/friend/get/all
   + method : GET   
   + header : `FriendHeader`   
-  + return : `[]string "json:friends"`
+  + return : `[]Friend`
++ friend get
+  + url : http://{{ endpoint }}:{{ port }}/friend/get
+  + method : GET   
+  + header : `FriendHeader`   
+  + return : `Friend`
 + friend delete
-  + url : http://{{ endpoint }}:{{ port }}/account/ap/set/
+  + url : http://{{ endpoint }}:{{ port }}/friend/delete
   + method : POST
   + header : `FriendHeader`
 

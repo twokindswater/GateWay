@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -32,6 +33,10 @@ var (
 	getFriendPath    = "/friend/get"
 	getAllFriendPath = "/friend/get/all"
 	deleteFrindPath  = "/friend/delete"
+)
+
+var (
+	ErrEmptyAccount = errors.New("empty account")
 )
 
 func (w *Web) SetAccountHandler(ctx context.Context) {
@@ -74,30 +79,29 @@ func (w *Web) GetAccountHandler(ctx context.Context) {
 			return
 		}
 
-		ac, err := w.db.GetAccount(ctx, header.ID)
+		account, err := w.db.GetAccount(ctx, header.ID)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 			return
 		}
 
-		// account valid check.
-		if ac == nil {
-			logger.Error(fmt.Errorf("account info is empty(%s)", header.ID))
-			c.JSON(model.FailResponseCode, gin.H{"error": fmt.Sprintf("account id(%s) is empty", header.ID)})
+		if account == nil {
+			logger.Error(ErrEmptyAccount)
+			c.JSON(http.StatusBadGateway, gin.H{"error": ErrEmptyAccount.Error()})
 			return
 		}
 
 		c.JSON(model.SuccessResponseCode, gin.H{
-			"name":      ac.Name,
-			"image":     ac.Image,
-			"ssid":      ac.SSID,
-			"bssid":     ac.BSSID,
-			"street":    ac.Street,
-			"initDate":  ac.InitDate,
-			"latitude":  ac.Latitude,
-			"longitude": ac.Longitude,
-			"friend":    ac.Friends,
+			"name":      account.Name,
+			"image":     account.Image,
+			"ssid":      account.SSID,
+			"bssid":     account.BSSID,
+			"street":    account.Street,
+			"initDate":  account.InitDate,
+			"latitude":  account.Latitude,
+			"longitude": account.Longitude,
+			"friend":    account.Friends,
 		})
 		return
 	})
@@ -225,6 +229,12 @@ func (w *Web) GetAllFriendsHandler(ctx context.Context) {
 			return
 		}
 
+		if account == nil {
+			logger.Error(ErrEmptyAccount)
+			c.JSON(http.StatusBadGateway, gin.H{"error": ErrEmptyAccount.Error()})
+			return
+		}
+
 		//var body []map[string]interface{}
 		var friends []model.Friend
 
@@ -268,6 +278,12 @@ func (w *Web) AddFriendHandler(ctx context.Context) {
 			return
 		}
 
+		if account == nil {
+			logger.Error(ErrEmptyAccount)
+			c.JSON(http.StatusBadGateway, gin.H{"error": ErrEmptyAccount.Error()})
+			return
+		}
+
 		account.Friends = append(account.Friends, friendHeader.FID)
 
 		if err := w.db.SetAccount(ctx, *account); err != nil {
@@ -297,6 +313,13 @@ func (w *Web) GetFriendHandler(ctx context.Context) {
 			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 			return
 		}
+
+		if account == nil {
+			logger.Error(ErrEmptyAccount)
+			c.JSON(http.StatusBadGateway, gin.H{"error": ErrEmptyAccount.Error()})
+			return
+		}
+
 		// ToDO : make AtHome DB and manage home user
 		friend := model.Friend{Id: account.Id, Name: account.Name,
 			Image: account.Image, AtHome: account.AtHome}
@@ -320,6 +343,12 @@ func (w *Web) DeleteFriendHandler(ctx context.Context) {
 		if err != nil {
 			logger.Error(err)
 			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+			return
+		}
+
+		if account == nil {
+			logger.Error(ErrEmptyAccount)
+			c.JSON(http.StatusBadGateway, gin.H{"error": ErrEmptyAccount.Error()})
 			return
 		}
 

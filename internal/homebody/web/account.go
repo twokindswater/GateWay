@@ -339,7 +339,7 @@ func (w *Web) DeleteFriendHandler(ctx context.Context) {
 			return
 		}
 
-		account, err := w.db.GetAccount(ctx, friendHeader.ID)
+		account, err := w.db.GetAccount(ctx, friendHeader.FID)
 		if err != nil {
 			logger.Error(err)
 			c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})

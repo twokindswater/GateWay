@@ -12,6 +12,7 @@ type Account struct {
 	Longitude float64  `json:"longitude"`
 	Friends   []string `json:"friends"`
 	AtHome    bool     `json:"atHome"`
+	Token     string   `json:"token"`
 }
 
 type Friend struct {

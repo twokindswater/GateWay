@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/Gateway/internal/homebody/config"
 	"github.com/Gateway/internal/homebody/db"
 	"github.com/Gateway/internal/homebody/firebase"
@@ -38,13 +39,13 @@ func main() {
 		panic(err)
 	}
 
-	fb, err := firebase.Init(ctx, cfg.Firebase)
+	client, err := firebase.Init(ctx, cfg.Firebase)
 	if err != nil {
 		panic(err)
 	}
 
 	// initialize webServer.
-	webServer, err := web.Init(ctx, cfg.Web, database, fb)
+	webServer, err := web.Init(ctx, cfg.Web, database, client)
 	if err != nil {
 		panic(err)
 	}

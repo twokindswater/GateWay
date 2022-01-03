@@ -102,6 +102,7 @@ func (w *Web) GetAccountHandler(ctx context.Context) {
 			"latitude":  account.Latitude,
 			"longitude": account.Longitude,
 			"friend":    account.Friends,
+			"toeken":    account.Token,
 		})
 		return
 	})

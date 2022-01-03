@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 
-	firebase "firebase.google.com/go"
+	"firebase.google.com/go/messaging"
 	"github.com/Gateway/internal/homebody/db"
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +13,7 @@ type (
 		engine *gin.Engine
 		port   string
 		db     *db.DB
-		fb     *firebase.App
+		client *messaging.Client
 	}
 
 	Config struct {
@@ -21,13 +21,13 @@ type (
 	}
 )
 
-func Init(ctx context.Context, config Config, db *db.DB, fb *firebase.App) (*Web, error) {
+func Init(ctx context.Context, config Config, db *db.DB, client *messaging.Client) (*Web, error) {
 
 	web := &Web{
 		engine: gin.Default(),
 		port:   config.Port,
 		db:     db,
-		fb:     fb,
+		client: client,
 	}
 
 	return web, nil
@@ -55,4 +55,7 @@ func (w *Web) AddHandler(ctx context.Context) {
 	w.GetAllFriendsHandler(ctx)
 	w.GetFriendHandler(ctx)
 	w.DeleteFriendHandler(ctx)
+
+	// knock
+	w.KnockHandler(ctx)
 }

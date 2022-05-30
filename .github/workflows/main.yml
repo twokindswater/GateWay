@@ -33,13 +33,11 @@ jobs:
 
       - name: set environment 
         id: commit_short
-        run: |
-          echo "::set-output name:commit::git rev-parse --short HEAD"
-      
+        run: echo "::set-output name=commit::git rev-parse --short HEAD"
+
       - name: set environment 
         id: date
-        run: |
-          echo "::set-output name:date::date '+%F'"
+        run: echo "::set-output name=date::date '+%F'"
           
       # Runs a single command using the runners shell
       - name: set env

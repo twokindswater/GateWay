@@ -69,4 +69,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: repository-eu.cerescloud.io/baikal/apiserver:${{ DATE }}-${ COMMIT_SHORT }
+          tags: repository-eu.cerescloud.io/baikal/apiserver:${ DATE }-${ COMMIT_SHORT }

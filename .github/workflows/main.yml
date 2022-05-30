@@ -29,10 +29,16 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: set env
-        run: echo "DATE=$(date '+%F')" >> $GITHUB_ENV
-      
+        run: |
+          echo "DATE=$(date '+%F')" >> $GITHUB_ENV
+          echo "KK=$(date '+%F')" >> $GITHUB_ENV
+
       - name: get env
         run: |
           echo hello
           echo $DATE
+          echo $KK
+          echo $DATE-$KK
+          echo ${DATE}-${KK}
+        
           echo $env.DATE

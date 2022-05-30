@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 env:
-  DATE: $(shell date '+%FT%T%z')
+  DATE: ""
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -28,5 +28,11 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo $DATE
+      - name: set env
+        run: echo "DATE=$(date '+%F')" >> $GITHUB_ENV
+      
+      - name: get env
+        run: |
+          echo hello
+          echo $DATE
+          echo $env.DATE

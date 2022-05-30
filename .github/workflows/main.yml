@@ -59,7 +59,7 @@ jobs:
           # Username used to log against the Docker registry
           username: ${{ secrets.DOCKER_USERNAME }}
           # Password or personal access token used to log against the Docker registry
-          password: ${{ secrets.DOCKER_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           # Specifies whether the given registry is ECR (auto, true or false)
           ecr: auto # optional, default is auto
           # Log out from the Docker registry at the end of a job
@@ -69,4 +69,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: repository-eu.cerescloud.io/baikal/apiserver:${ DATE }-${ COMMIT_SHORT }
+          tags: repository-eu.cerescloud.jfrog.io/baikal/apiserver:${ DATE }-${ COMMIT_SHORT }

@@ -22,11 +22,25 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    outputs: 
+      COMMIT_SHORT: ${{ steps.commit_short.outputs.commit }}
+      DATE: ${{ steps.date.outputs.date }}
+      
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: set environment 
+        id: commit_short
+        run: |
+          echo "::set-output name:commit::git rev-parse --short HEAD"
+      
+      - name: set environment 
+        id: date
+        run: |
+          echo "::set-output name:date::date '+%F'"
+          
       # Runs a single command using the runners shell
       - name: set env
         run: |
@@ -40,5 +54,5 @@ jobs:
           echo $KK
           echo $DATE-$KK
           echo ${DATE}-${KK}
-        
+          echo output: ${{needs.build.outputs.COMMIT_SHORT}}-${{needs.build.outputs.DATE}}
           echo $env.DATE
